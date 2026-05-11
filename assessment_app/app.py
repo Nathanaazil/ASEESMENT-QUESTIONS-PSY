@@ -26,7 +26,7 @@ DATABASE_URL = os.environ.get(
 # Handle Heroku-style URLs (some hosts use postgres:// instead of postgresql://)
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-
+print(f"Connecting to database at {DATABASE_URL}")
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_size=10, max_overflow=20)
 SessionLocal = scoped_session(sessionmaker(bind=engine, autocommit=False, autoflush=False))
 Base = declarative_base()
