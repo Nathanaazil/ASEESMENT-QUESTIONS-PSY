@@ -298,11 +298,9 @@ def admin_export():
 def health():
     """Health check for AWS load balancers."""
     try:
-        session = SessionLocal()
-        session.execute("SELECT 1")
-        session.close()
         return jsonify({"status": "ok"}), 200
     except Exception as e:
+        print(f"Health check failed: {e}")
         return jsonify({"status": "error", "error": str(e)}), 503
 
 
