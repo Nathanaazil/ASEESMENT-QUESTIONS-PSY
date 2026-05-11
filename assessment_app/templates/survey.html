@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integrated Employee Experience Assessment</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f4f6f8;
+      color: #2c3e50;
+      line-height: 1.5;
+      padding: 0 0 80px;
+    }
+    .header {
+      background: linear-gradient(135deg, #1F4E78 0%, #2E75B6 100%);
+      color: white;
+      padding: 28px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .header-inner { max-width: 820px; margin: 0 auto; }
+    .header h1 { font-size: 22px; margin-bottom: 6px; }
+    .header p { font-size: 14px; opacity: 0.9; }
+
+    .progress-bar {
+      position: sticky; top: 0; z-index: 10;
+      background: white;
+      padding: 10px 24px;
+      border-bottom: 1px solid #e1e5ea;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .progress-track {
+      max-width: 820px; margin: 0 auto;
+      height: 8px; background: #e1e5ea;
+      border-radius: 4px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg, #2E75B6, #5BA3DA);
+      width: 0%; transition: width 0.3s ease;
+    }
+    .progress-text {
+      max-width: 820px; margin: 6px auto 0;
+      font-size: 12px; color: #6c7a89; text-align: right;
+    }
+
+    .container { max-width: 820px; margin: 24px auto; padding: 0 16px; }
+
+    .intro-card {
+      background: white; border-radius: 12px; padding: 22px 24px;
+      margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-left: 4px solid #2E75B6;
+    }
+    .intro-card p { font-size: 14px; color: #4a5a6a; margin-bottom: 10px; }
+    .intro-card p:last-child { margin-bottom: 0; }
+
+    .error-banner {
+      background: #fff4f4; border-left: 4px solid #e74c3c;
+      color: #c0392b; padding: 14px 18px; border-radius: 8px;
+      margin-bottom: 20px; font-size: 14px;
+    }
+
+    .section {
+      background: white; border-radius: 12px; padding: 24px;
+      margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .section h2 {
+      font-size: 18px; color: #1F4E78;
+      padding-bottom: 10px; margin-bottom: 6px;
+      border-bottom: 2px solid #e1e5ea;
+    }
+    .section-desc {
+      font-size: 13px; color: #6c7a89; margin-bottom: 18px; font-style: italic;
+    }
+
+    .question {
+      padding: 16px 0; border-bottom: 1px solid #f0f2f5;
+    }
+    .question:last-child { border-bottom: none; }
+    .question-text {
+      font-size: 14px; font-weight: 500; margin-bottom: 12px; color: #2c3e50;
+    }
+    .question-text .num {
+      display: inline-block; min-width: 28px;
+      color: #2E75B6; font-weight: 600;
+    }
+    .required-star { color: #e74c3c; margin-left: 3px; }
+
+    .options { display: grid; grid-template-columns: 1fr; gap: 6px; }
+    .option {
+      display: flex; align-items: center;
+      padding: 9px 12px; border: 1px solid #d8dee5;
+      border-radius: 6px; cursor: pointer;
+      font-size: 13.5px;
+      transition: all 0.15s ease;
+      background: #fafbfc;
+    }
+    .option:hover { background: #eef4fa; border-color: #2E75B6; }
+    .option input { margin-right: 10px; accent-color: #2E75B6; }
+    .option input:checked + span { color: #1F4E78; font-weight: 500; }
+    .option:has(input:checked) {
+      background: #e7f0f8; border-color: #2E75B6;
+    }
+
+    .demo-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .demo-field { display: flex; flex-direction: column; }
+    .demo-field.full { grid-column: 1 / -1; }
+    .demo-field label {
+      font-size: 13px; font-weight: 500; margin-bottom: 5px; color: #4a5a6a;
+    }
+    .demo-field input, .demo-field select {
+      padding: 9px 12px; border: 1px solid #d8dee5;
+      border-radius: 6px; font-size: 14px;
+      font-family: inherit; background: white;
+    }
+    .demo-field input:focus, .demo-field select:focus {
+      outline: none; border-color: #2E75B6;
+      box-shadow: 0 0 0 3px rgba(46,117,182,0.15);
+    }
+
+    .submit-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: white; border-top: 1px solid #e1e5ea;
+      padding: 14px 24px; box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+      z-index: 20;
+    }
+    .submit-inner {
+      max-width: 820px; margin: 0 auto;
+      display: flex; gap: 12px; align-items: center; justify-content: space-between;
+    }
+    .submit-info { font-size: 13px; color: #6c7a89; }
+    button[type="submit"] {
+      background: #1F4E78; color: white; border: none;
+      padding: 12px 28px; border-radius: 8px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button[type="submit"]:hover { background: #163e60; }
+    button[type="submit"]:disabled { background: #95a5b3; cursor: not-allowed; }
+
+    @media (max-width: 600px) {
+      .demo-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 18px; }
+      .section { padding: 18px 16px; }
+      .submit-inner { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-inner">
+      <h1>Integrated Employee Experience Assessment</h1>
+      <p>Your honest, confidential responses help improve the workplace.</p>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 of 95 answered</div>
+  </div>
+
+  <div class="container">
+    {% if error %}
+      <div class="error-banner">{{ error }}</div>
+    {% endif %}
+
+    <div class="intro-card">
+      <p>You are invited to take part in an assessment about your experiences in the workplace. This questionnaire aims to understand different aspects of employee well-being, work experiences, motivation, workplace relationships, organizational support, and overall job experience.</p>
+      <p>There are no right or wrong answers. Please respond honestly based on your personal experiences and feelings at work. Your responses are confidential and used only for research, assessment, or organizational improvement purposes.</p>
+    </div>
+
+    <form id="surveyForm" action="{{ url_for('submit') }}" method="POST" novalidate>
+
+      <!-- Demographics -->
+      <div class="section">
+        <h2>About You</h2>
+        <p class="section-desc">Basic demographics — Name is optional.</p>
+        <div class="demo-grid">
+          {% for d in demographics %}
+            <div class="demo-field {% if d.id in ['job_role', 'name'] %}full{% endif %}">
+              <label for="{{ d.id }}">
+                {{ d.label }}{% if d.required %}<span class="required-star">*</span>{% endif %}
+              </label>
+              {% if d.type == 'select' %}
+                <select id="{{ d.id }}" name="{{ d.id }}" {% if d.required %}required{% endif %}>
+                  <option value="">— Select —</option>
+                  {% for opt in d.options %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input
+                  type="{{ d.type }}"
+                  id="{{ d.id }}"
+                  name="{{ d.id }}"
+                  {% if d.required %}required{% endif %}
+                  {% if d.min is defined %}min="{{ d.min }}"{% endif %}
+                  {% if d.max is defined %}max="{{ d.max }}"{% endif %}
+                />
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Assessment Sections -->
+      {% for section in questions %}
+        <div class="section">
+          <h2>{{ section.section }}</h2>
+          <p class="section-desc">{{ section.description }}</p>
+
+          {% for item in section['items'] %}
+            <div class="question" data-qid="{{ item.id }}">
+              <div class="question-text">
+                <span class="num">{{ item.id }}.</span>
+                {{ item.text }}<span class="required-star">*</span>
+              </div>
+              <div class="options">
+                {% for opt in item.options %}
+                  <label class="option">
+                    <input
+                      type="radio"
+                      name="{{ item.id }}"
+                      value="{{ loop.index }}"
+                      required
+                      class="answer-input"
+                    >
+                    <span>{{ opt }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="submit-bar">
+        <div class="submit-inner">
+          <div class="submit-info" id="submitInfo">Please answer all questions.</div>
+          <button type="submit" id="submitBtn" disabled>Submit Assessment</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Live progress tracking
+    const form = document.getElementById('surveyForm');
+    const fill = document.getElementById('progressFill');
+    const text = document.getElementById('progressText');
+    const info = document.getElementById('submitInfo');
+    const btn = document.getElementById('submitBtn');
+    const TOTAL = 95;
+
+    function updateProgress() {
+      const answered = new Set();
+      form.querySelectorAll('.answer-input:checked').forEach(el => answered.add(el.name));
+      const count = answered.size;
+      const pct = (count / TOTAL) * 100;
+      fill.style.width = pct + '%';
+      text.textContent = `${count} of ${TOTAL} answered`;
+
+      if (count === TOTAL) {
+        info.textContent = "All questions answered — ready to submit.";
+        info.style.color = "#27ae60";
+        btn.disabled = false;
+      } else {
+        info.textContent = `${TOTAL - count} more to go.`;
+        info.style.color = "#6c7a89";
+        btn.disabled = true;
+      }
+    }
+
+    form.addEventListener('change', updateProgress);
+    updateProgress();
+
+    // Scroll to first unanswered on submit if any missing
+    form.addEventListener('submit', (e) => {
+      const answered = new Set();
+      form.querySelectorAll('.answer-input:checked').forEach(el => answered.add(el.name));
+      if (answered.size < TOTAL) {
+        e.preventDefault();
+        for (let i = 1; i <= 95; i++) {
+          if (!answered.has(`Q${i}`)) {
+            const q = document.querySelector(`[data-qid="Q${i}"]`);
+            if (q) {
+              q.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              q.style.background = '#fff4f4';
+              setTimeout(() => q.style.background = '', 2000);
+            }
+            break;
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
